@@ -48,7 +48,6 @@ class _HomePageState extends State<HomePage> {
                 // 判断是否是监听更新的对象
                 if (scrollNotification is ScrollUpdateNotification &&
                     // 从最外层Widget开始向下遍历查找
-
                     scrollNotification.depth == 0) {
                   // 滚动且是列表滚动的时候
                   _onScroll(scrollNotification.metrics.pixels);
