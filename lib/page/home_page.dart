@@ -1,5 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutter_trip/dao/home_dao.dart';
+import 'package:flutter_trip/model/common_model.dart';
+import 'package:flutter_trip/model/home_model.dart';
+import 'package:flutter_trip/widget/grid_nav.dart';
+import 'package:flutter_trip/widget/local_nav.dart';
 
 // 滚动最大距离
 const APPBAR_SCROLL_OFFSET = 100;
@@ -18,6 +25,16 @@ class _HomePageState extends State<HomePage> {
   ];
 
   double appBarAlpha = 0;
+  String resultString = "";
+
+  List<CommonModel> localNavList;
+
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
   _onScroll(offset) {
     // 滚动距离除以最大滚动距离
@@ -35,9 +52,33 @@ class _HomePageState extends State<HomePage> {
     print(appBarAlpha);
   }
 
+  loadData() async{
+//      HomeDao.fetch().then((result){
+//        setState(() {
+//          resultString = json.encode(result);
+//        });
+//      }).catchError((e){
+//        setState(() {
+//          resultString = json.encode(e);
+//        });
+//      });
+  try{
+    HomeModel model = await HomeDao.fetch();
+    setState(() {
+      localNavList = model.localNavList;
+    });
+  }catch (e){
+    print(e);
+  }
+
+
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xfff2f2f2),
       body: Stack(
         children: <Widget>[
           MediaQuery.removePadding(
@@ -70,10 +111,11 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
+                  Padding(padding: EdgeInsets.fromLTRB(7, 4, 7, 4),child: LocalNav(localNavList: localNavList,),),
                   Container(
                     height: 800,
                     child: ListTile(
-                      title: Text("哈哈"),
+                      title: Text(resultString ),
                     ),
                   )
                 ],

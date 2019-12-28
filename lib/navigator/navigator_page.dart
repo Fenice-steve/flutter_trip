@@ -24,6 +24,8 @@ class _NavigatorPageState extends State<NavigatorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
+        // 禁止pageView左右滑动
+        physics: NeverScrollableScrollPhysics(),
         controller: _pageController,
         children: <Widget>[HomePage(), SearchPage(), MyPage(), TravelPage()],
       ),
