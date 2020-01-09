@@ -32,13 +32,15 @@ class SubNav extends StatelessWidget {
       children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: items.sublist(0,separate),
+          children: items.sublist(0, separate),
         ),
-        Padding(padding: EdgeInsets.only(top: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: items.sublist(separate, subNavList.length),
-        ),)
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: items.sublist(separate, subNavList.length),
+          ),
+        )
       ],
     );
   }
@@ -47,11 +49,16 @@ class SubNav extends StatelessWidget {
     return Expanded(
         flex: 1,
         child: GestureDetector(
-          onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>WebView(url: model.url,
-              statusBarColor: model.statusBarColor,
-              hideAppBar: model.hideAppBar,
-              title: model.title,)));
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => WebView(
+                          url: model.url,
+                          statusBarColor: model.statusBarColor,
+                          hideAppBar: model.hideAppBar,
+                          title: model.title,
+                        )));
           },
           child: Column(
             children: <Widget>[

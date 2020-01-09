@@ -52,8 +52,13 @@ class SalesBox extends StatelessWidget {
                         end: Alignment.centerRight)),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>WebView(url: salesBox.moreUrl,
-                      title: '更多活动',)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => WebView(
+                                  url: salesBox.moreUrl,
+                                  title: '更多活动',
+                                )));
                   },
                   child: Text(
                     '获取更多福利>',
@@ -67,10 +72,12 @@ class SalesBox extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: items.sublist(0, 1),
-        ),Row(
+        ),
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: items.sublist(1, 2),
-        ),Row(
+        ),
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: items.sublist(2, 3),
         ),
@@ -94,10 +101,15 @@ class SalesBox extends StatelessWidget {
     BorderSide borderSide = BorderSide(width: 0.8, color: Color(0xfff2f2f2));
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>WebView(url: model.url,
-          statusBarColor: model.statusBarColor,
-          hideAppBar: model.hideAppBar,
-          title: model.title,)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => WebView(
+                      url: model.url,
+                      statusBarColor: model.statusBarColor,
+                      hideAppBar: model.hideAppBar,
+                      title: model.title,
+                    )));
       },
       child: Container(
         decoration: BoxDecoration(

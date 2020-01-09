@@ -113,6 +113,7 @@ class _HomePageState extends State<HomePage>
                               // 滚动且是列表滚动的时候
                               _onScroll(scrollNotification.metrics.pixels);
                             }
+                            return false;
                           },
                           child: _listView
                         ),
