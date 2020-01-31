@@ -7,10 +7,12 @@ import 'package:flutter_trip/model/common_model.dart';
 import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/home_model.dart';
 import 'package:flutter_trip/model/sales_box_model.dart';
+import 'package:flutter_trip/page/search_page.dart';
 import 'package:flutter_trip/widget/grid_nav.dart';
 import 'package:flutter_trip/widget/loading_container.dart';
 import 'package:flutter_trip/widget/local_nav.dart';
 import 'package:flutter_trip/widget/sales_box.dart';
+import 'package:flutter_trip/widget/search_bar.dart';
 import 'package:flutter_trip/widget/sub_nav.dart';
 import 'package:flutter_trip/widget/webview.dart';
 
@@ -39,6 +41,8 @@ class _HomePageState extends State<HomePage>
   GridNavModel gridNav; // 网格卡片
   List<CommonModel> subNavList; // 活动导航
   SalesBoxModel salesBox; // 底部卡片
+
+  String city = '西安';
 
   bool _loading = true; // 页面加载状态
 
@@ -95,15 +99,15 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
         backgroundColor: Color(0xfff2f2f2),
         body: LoadingContainer(
-            isLoading: _loading,
-            child: Stack(
-              children: <Widget>[
-                // 移除顶部的Padding边距
-                MediaQuery.removePadding(
-                    removeTop: true,
-                    context: context,
-                    child: RefreshIndicator(
-                        child: NotificationListener(
+          isLoading: _loading,
+          child: Stack(
+            children: <Widget>[
+              // 移除顶部的Padding边距
+              MediaQuery.removePadding(
+                  removeTop: true,
+                  context: context,
+                  child: RefreshIndicator(
+                      child: NotificationListener(
                           onNotification: (scrollNotification) {
                             // 判断是否是监听更新的对象
                             if (scrollNotification
@@ -115,17 +119,16 @@ class _HomePageState extends State<HomePage>
                             }
                             return false;
                           },
-                          child: _listView
-                        ),
-                        onRefresh: _handleRefresh)),
-                _appBar
-              ],
-            ),
-            ));
+                          child: _listView),
+                      onRefresh: _handleRefresh)),
+              _appBar
+            ],
+          ),
+        ));
   }
 
   /// ListView列表
-  Widget get _listView{
+  Widget get _listView {
     return ListView(
       children: <Widget>[
         _banner,
@@ -170,26 +173,46 @@ class _HomePageState extends State<HomePage>
   }
 
   /// 自定义appBar
-  Widget get _appBar{
+  Widget get _appBar {
     return // 透明Widget，opacity是必要参数
-      Opacity(
-        opacity: appBarAlpha,
-        child: Container(
-          height: 80,
-          decoration: BoxDecoration(color: Colors.white),
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: Text("首页"),
+        Column(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Color(0x66000000), Colors.transparent],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter),
+          ),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            height: 80,
+            decoration: BoxDecoration(
+                color:
+                    Color.fromARGB((appBarAlpha * 255).toInt(), 255, 255, 255)),
+            child: SearchBar(
+              searchBarType: appBarAlpha > 0.2
+                  ? SearchBarType.homeLight
+                  : SearchBarType.home,
+              inputBoxClick: _jumpToSearch,
+              speakClick: _jumpToSpeak,
+              defaultText: SEARCH_BAR_DEFAULT_TEXT,
+              leftButtonClick: _jumpToCity,
+              city: city,
             ),
           ),
         ),
-      );
+
+          Container(
+            height: appBarAlpha > 0.2 ? 0.5:0,
+            decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black12,blurRadius: 0.5)]),
+          )
+      ],
+    );
   }
 
-
   /// banner轮播图
-  Widget get _banner{
+  Widget get _banner {
     return Container(
       height: 160,
       child: Swiper(
@@ -197,20 +220,39 @@ class _HomePageState extends State<HomePage>
         autoplay: true,
         // Swiper指示器
         pagination: SwiperPagination(),
-        itemBuilder:
-            (BuildContext context, int index) {
+        itemBuilder: (BuildContext context, int index) {
           return Image.network(
             bannerList[index].icon,
             fit: BoxFit.fill,
           );
         },
-        onTap: (index){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>WebView(url: bannerList[index].url,
-            hideAppBar: bannerList[index].hideAppBar,
-            title: bannerList[index].title,)));
+        onTap: (index) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WebView(
+                        url: bannerList[index].url,
+                        hideAppBar: bannerList[index].hideAppBar,
+                        title: bannerList[index].title,
+                      )));
         },
       ),
     );
   }
 
+  // 跳转到城市列表
+  void _jumpToCity() async {}
+
+  // 跳转搜索页面
+  void _jumpToSearch() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SearchPage(
+                  hint: SEARCH_BAR_DEFAULT_TEXT,
+                )));
+  }
+
+  //跳转语音识别页面
+  void _jumpToSpeak() {}
 }

@@ -19,6 +19,8 @@ const TYPES = [
   'travelgroup'
 ];
 const SEARCH_BAR_DEFAULT_TEXT = '网红打卡地 景点 酒店 美食';
+const URL =
+    'https://m.ctrip.com/restapi/h5api/searchapp/search?source=mobileweb&action=autocomplete&contentType=json&keyword=';
 
 /// 发现页面
 class SearchPage extends StatefulWidget {
@@ -27,7 +29,7 @@ class SearchPage extends StatefulWidget {
   final String keyword;
   final String hint;
 
-  SearchPage({this.hideLeft, this.searchUrl, this.keyword, this.hint});
+  SearchPage({this.hideLeft, this.searchUrl = URL, this.keyword, this.hint});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -54,17 +56,29 @@ class _SearchPageState extends State<SearchPage> {
       });
       return;
     }
-    try {
-      SearchModel model = await SearchDao.fetch(keyword);
-      // 只有当当前输入的内容和服务端返回的内容一致时才渲染
+
+    String url = widget.searchUrl + text;
+    SearchDao.fetch(url, text).then((SearchModel model) {
       if (model.keyword == keyword) {
         setState(() {
           searchModel = model;
         });
       }
-    } catch (e) {
+    }).catchError((e) {
       print(e);
-    }
+    });
+
+//    try {
+//      SearchModel model = await SearchDao.fetch(keyword);
+//      // 只有当当前输入的内容和服务端返回的内容一致时才渲染
+//      if (model.keyword == keyword) {
+//        setState(() {
+//          searchModel = model;
+//        });
+//      }
+//    } catch (e) {
+//      print(e);
+//    }
   }
 
   // 跳转语音识别页面
@@ -115,7 +129,7 @@ class _SearchPageState extends State<SearchPage> {
               speakClick: _jumpToSpeak,
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -153,11 +167,30 @@ class _SearchPageState extends State<SearchPage> {
                 )
               ],
             )
+//          Column(
+//            children: <Widget>[
+//              Container(
+//                width: 300,
+//                child: Text('${item.word??''} ${item.districtname??''} ${item.zonename??''}' ),
+//              ),
+//              Container(
+//                width: 300,
+//                child: Text('${item.price??''} ${item.type??''} ' ),
+//              )
+//            ],
+//          )
           ],
         ),
       ),
     );
   }
+
+//  // 搜索item结果
+//  Widget _item(int position) {
+//    if (searchModel == null || searchModel.data == null) return null;
+//    SearchItem item = searchModel.data[position];
+//    return Text(item.word);
+//  }
 
   // 搜索结果图片
   String _typeImage(String type) {
@@ -185,12 +218,44 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   // 搜索副标题
-  Widget _subTitle(SearchItem item){
-
+  Widget _subTitle(SearchItem item) {
+    if (item == null) return null;
+    return RichText(
+      text: TextSpan(children: <TextSpan>[
+        TextSpan(
+            text: item.price ?? '',
+            style: TextStyle(fontSize: 16, color: Colors.orange)),
+        TextSpan(
+            text: ' ' + (item.type ?? ''),
+            style: TextStyle(fontSize: 12, color: Colors.grey))
+      ]),
+    );
   }
 
   // 关键字高亮
-  List<TextSpan> _keywordTextSpans(String word, String keyword){
-
+  List<TextSpan> _keywordTextSpans(String word, String keyword) {
+    List<TextSpan> spans = [];
+    if (word == null || word.length == 0) return spans;
+    //搜索关键字高亮忽略大小写
+    String wordL = word.toLowerCase(), keywordL = keyword.toLowerCase();
+    List<String> arr = wordL.split(keywordL);
+    TextStyle normalStyle = TextStyle(fontSize: 16, color: Colors.black87);
+    TextStyle keywordStyle = TextStyle(fontSize: 16, color: Colors.orange);
+    //'wordwoc'.split('w') -> [, ord, oc]
+    int preIndex = 0;
+    for (int i = 0; i < arr.length; i++) {
+      if (i != 0) {
+        //搜索关键字高亮忽略大小写
+        preIndex = wordL.indexOf(keywordL, preIndex);
+        spans.add(TextSpan(
+            text: word.substring(preIndex, preIndex + keyword.length),
+            style: keywordStyle));
+      }
+      String val = arr[i];
+      if (val != null && val.length > 0) {
+        spans.add(TextSpan(text: val, style: normalStyle));
+      }
+    }
+    return spans;
   }
 }

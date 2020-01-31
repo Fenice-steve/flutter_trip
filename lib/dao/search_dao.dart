@@ -10,14 +10,16 @@ const SEARCH_URL = 'https://m.ctrip.com/restapi/h5api/searchapp/search?source=mo
 
 /// 搜索接口
 class SearchDao{
-  static Future<SearchModel> fetch(String keyword) async{
-    final response = await http.get(SEARCH_URL + keyword);
+  static Future<SearchModel> fetch(String url, String text) async{
+    final response = await http.get(url);
     if(response.statusCode == 200){
-      // 只有当输入的内容与服务端返回的内容一致时才渲染
-      SearchModel model = SearchModel.fromJson();
       Utf8Decoder utf8decoder = Utf8Decoder(); // fix中文乱码
       var result = json.decode(utf8decoder.convert(response.bodyBytes));
-      return HomeModel.fromJson(result);
+      // 只有当输入的内容与服务端返回的内容一致时才渲染
+      SearchModel model = SearchModel.fromJson(result);
+      model.keyword = text;
+
+      return model;
     }else{
       throw Exception('Failed to load home_page.json');
     }

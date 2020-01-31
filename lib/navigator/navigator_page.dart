@@ -27,7 +27,7 @@ class _NavigatorPageState extends State<NavigatorPage> {
         // 禁止pageView左右滑动
         physics: NeverScrollableScrollPhysics(),
         controller: _pageController,
-        children: <Widget>[HomePage(), SearchPage(), MyPage(), TravelPage()],
+        children: <Widget>[HomePage(), SearchPage(hideLeft: true,), MyPage(), TravelPage()],
       ),
       // 底部导航栏
       bottomNavigationBar: BottomNavigationBar(
